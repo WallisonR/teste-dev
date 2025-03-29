@@ -1,7 +1,6 @@
 import os
 from zipfile import ZipFile
 
-# Função para compactar os arquivos PDF encontrados na pasta 'dados'
 def compress_pdfs(folder, zip_name):
     pdf_files = [f for f in os.listdir(folder) if f.endswith('.pdf')]
     if not pdf_files:
@@ -14,7 +13,6 @@ def compress_pdfs(folder, zip_name):
             zipf.write(pdf_path, pdf)  # Adiciona o arquivo ao ZIP
         print(f"{len(pdf_files)} arquivos compactados em: {zip_name}")
 
-# Função principal
 def main():
     folder = 'dados'
     if not os.path.exists(folder):

@@ -1,11 +1,10 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Importar o Flask-CORS
+from flask_cors import CORS  
 import mysql.connector
 
 app = Flask(__name__)
-CORS(app)  # Habilitar CORS para todas as rotas
+CORS(app)  
 
-# Configuração do banco de dados
 db_config = {
     'host': 'localhost',
     'user': 'root',
@@ -13,19 +12,16 @@ db_config = {
     'database': 'ans_data'
 }
 
-# Rota para busca textual
 @app.route('/search', methods=['GET'])
 def search_operators():
     query = request.args.get('query', '').strip()
     if not query:
-        return jsonify([])  # Retorna uma lista vazia se a consulta estiver vazia
+        return jsonify([])  
 
     try:
-        # Conectar ao banco de dados
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
-        # Query para buscar operadoras pelo nome ou registro
         sql = """
         SELECT registro_ans AS REGISTRO, nome AS NOME
         FROM operadoras
@@ -48,7 +44,6 @@ def search_operators():
         if conn:
             conn.close()
 
-# Iniciar o servidor
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
 

@@ -1,71 +1,69 @@
-📌 Etapas do Teste
+# 📌 Teste Dev
 
-1️⃣ Web Scraping
+## 🛠 Tecnologias Utilizadas
 
-Acessar o site da ANS.
+- **Python** (para web scraping e transformação de dados)
+- **MySQL** (para armazenamento dos dados)
+- **Vue.js** (para frontend da API)
+- **Postman** (para documentação dos endpoints)
+- **Selenium** (para automação de scraping)
 
-Baixar os arquivos Anexo I e Anexo II (PDFs) das demonstrações contábeis.
+## 🚀 Setup do Projeto
 
-Compactar os arquivos baixados.
+### 1️⃣ Instalação de Dependências
 
-2️⃣ Transformação de Dados
+Antes de rodar o projeto, é necessário configurar o ambiente. Siga os passos abaixo:
 
-Extrair os dados do Anexo I.
+#### **1.1 Instalar Python e Dependências**
+Certifique-se de que você tem o **Python 3.8+** instalado.
 
-Salvar as informações extraídas em um arquivo CSV.
+```bash
+pip install -r requirements.txt
+```
 
-Compactar o arquivo CSV.
+#### **1.2 Instalar MySQL**
+Baixe e instale o MySQL 8.0 ou superior. Durante a instalação:
+- Configure um usuário **root** com senha.
+- Anote o caminho do executável do MySQL (ex: `C:\Program Files\MySQL\MySQL Server 8.0\bin`).
 
-Substituir abreviações dos dados transformados.
+#### **1.3 Instalar o ChromeDriver**
+O Selenium requer um driver para interagir com o navegador. Faça o download do **ChromeDriver** compatível com a versão do seu Chrome em:
 
-3️⃣ Banco de Dados (MySQL)
+[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)
 
-Criar as tabelas para armazenar os dados:
+Após o download, extraia e mova o executável para dentro do projeto (exemplo: `C:/Users/user/teste-dev/web_scraping/chromedriver.exe`).
 
-operadoras → Dados cadastrais das operadoras.
+---
 
-procedimentos → Lista de procedimentos médicos.
+### 2️⃣ Executando o Teste
 
-cobertura → Relacionamento entre operadoras e procedimentos.
+#### **2.1 Configurar Banco de Dados**
 
-demonstracoes_contabeis → Informações financeiras trimestrais das operadoras.
+1. Abra o MySQL e crie o banco de dados:
+```sql
+CREATE DATABASE ans_data;
+USE ans_data;
+```
+2. Execute o script de criação das tabelas:
+```bash
+mysql -u root -p ans_data < banco_de_dados.sql
+```
 
-Criação das Tabelas
-CREATE TABLE operadoras (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    registro_ans VARCHAR(10) NOT NULL,
-    nome VARCHAR(255) NOT NULL,
-    cnpj VARCHAR(18) NOT NULL UNIQUE
-);
+#### **2.2 Executar Web Scraping**
+```bash
+python script_scraping.py
+```
+Isso irá baixar e compactar os PDFs da ANS.
 
-CREATE TABLE procedimentos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(20) NOT NULL UNIQUE,
-    descricao TEXT NOT NULL
-);
+#### **2.3 Transformação de Dados**
+```bash
+python processamentos.py
+```
+Isso extrairá dados do Anexo I e salvará um CSV compactado.
 
-CREATE TABLE cobertura (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    operadora_id INT,
-    procedimento_id INT,
-    cobertura VARCHAR(10) NOT NULL,
-    FOREIGN KEY (operadora_id) REFERENCES operadoras(id),
-    FOREIGN KEY (procedimento_id) REFERENCES procedimentos(id)
-);
-
-CREATE TABLE demonstracoes_contabeis (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    operadora_id INT,
-    trimestre VARCHAR(10),
-    ano INT,
-    receita DECIMAL(15,2),
-    despesa DECIMAL(15,2),
-    lucro DECIMAL(15,2),
-    FOREIGN KEY (operadora_id) REFERENCES operadoras(id)
-);
-Importação dos Dados
-
-Para importar os arquivos baixados:
+#### **2.4 Inserir Dados no Banco**
+Importe os arquivos CSV no MySQL:
+```sql
 LOAD DATA INFILE 'C:/Users/user/demonstracoes_contabeis/1T2023.csv'
 INTO TABLE demonstracoes_contabeis
 FIELDS TERMINATED BY ';'
@@ -73,32 +71,16 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (operadora_id, trimestre, ano, receita, despesa, lucro);
-epita o processo para os outros arquivos trimestrais.
+```
+Repita para os outros arquivos trimestrais.
 
-4️⃣ API com Vue.js e Python
+#### **2.5 Rodar a API**
+```bash
+python api.py
+```
+A API estará disponível em `http://localhost:5000`.
 
-Criar um servidor para buscar informações das operadoras.
-
-Permitir busca textual pelos registros da ANS.
-
-Documentar os endpoints via Postman.
-
-🚀 Execução do Projeto
-
-Baixar os arquivos da ANS e salvar em C:/Users/user/demonstracoes_contabeis.
-
-Criar o banco de dados e as tabelas no MySQL.
-
-Inserir os dados transformados.
-
-Criar a API para consulta dos dados.
-
-🛠 Tecnologias Utilizadas
-
-Python (para web scraping e transformação de dados)
-
-MySQL (para armazenamento dos dados)
-
-Vue.js (para frontend da API)
-
-Postman (para documentação dos endpoints)
+#### **2.6 Testar no Postman**
+Use os endpoints disponíveis para buscar dados no banco:
+- `GET /operadoras?search=Unimed`
+- `GET /procedimentos?codigo=001`

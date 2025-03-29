@@ -8,13 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from zipfile import ZipFile
 
-# Caminho para o ChromeDriver (ajuste conforme sua instalação)
-chrome_driver_path = 'C:/Users/user/teste-dev/web_scraping/chromedriver-win64/chromedriver.exe'  # Atualize com o caminho correto
+chrome_driver_path = 'C:/Users/user/teste-dev/web_scraping/chromedriver-win64/chromedriver.exe'  
 
-# URL do site
 url = 'https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-dasociedade/atualizacao-do-rol-de-procedimentos'
 
-# Função para baixar o arquivo PDF
 def download_pdf(pdf_url, save_path):
     response = requests.get(pdf_url)
     if response.status_code == 200:
@@ -24,7 +21,6 @@ def download_pdf(pdf_url, save_path):
     else:
         print(f"Falha no download do arquivo: {pdf_url}")
 
-# Função para fazer o scraping da página e extrair os links dos PDFs
 def get_pdf_links_selenium(page_url):
     service = Service(chrome_driver_path)
     options = webdriver.ChromeOptions()
@@ -34,7 +30,6 @@ def get_pdf_links_selenium(page_url):
         driver.get(page_url)
         wait = WebDriverWait(driver, 10)
 
-        # Aguardar carregamento da página e garantir que todos os links sejam encontrados
         time.sleep(5)
 
         pdf_links = []
@@ -55,14 +50,12 @@ def get_pdf_links_selenium(page_url):
     finally:
         driver.quit()
 
-# Função para compactar os arquivos em um ZIP
 def compress_pdfs(pdf_files, zip_name):
     with ZipFile(zip_name, 'w') as zipf:
         for pdf in pdf_files:
             zipf.write(pdf, os.path.basename(pdf))
         print(f"Arquivos compactados em: {zip_name}")
 
-# Função principal
 def main():
     if not os.path.exists('dados'):
         os.makedirs('dados')

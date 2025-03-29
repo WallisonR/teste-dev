@@ -1,6 +1,5 @@
 import mysql.connector
 
-# Estabelecer a conexão com o banco de dados MySQL
 conn = mysql.connector.connect(
     host="localhost",         
     user="root",              
@@ -11,7 +10,6 @@ conn = mysql.connector.connect(
 
 cursor = conn.cursor()
 
-# Verificando se a variável local_infile está habilitada
 cursor.execute("SHOW VARIABLES LIKE 'local_infile';")
 result = cursor.fetchone()
 if result and result[1] == 'ON':
@@ -19,7 +17,6 @@ if result and result[1] == 'ON':
 else:
     print("A opção LOCAL INFILE não está habilitada. Verifique as configurações do MySQL.")
 
-# Carregar dados do arquivo CSV
 sql = """
 LOAD DATA LOCAL INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Relatorio_cadop.csv'
 INTO TABLE operadoras
@@ -35,20 +32,17 @@ try:
     conn.commit()  
     print("Dados carregados com sucesso!")
 
-    # Query para verificar se existem dados válidos na tabela 'despesas'
     cursor.execute("SELECT * FROM despesas LIMIT 10;")
     resultados = cursor.fetchall()
     if not resultados:
         print("Nenhum dado encontrado na tabela 'despesas'.")
     else:
-        # Verificar os valores distintos da coluna 'categoria' para garantir que está correto
         cursor.execute("SELECT DISTINCT categoria FROM despesas LIMIT 10;")
         categorias = cursor.fetchall()
         print("Categorias encontradas na tabela despesas:")
         for categoria in categorias:
             print(categoria)
 
-        # Verificar se há valores inválidos na coluna 'data' ou 'categoria'
         cursor.execute("SELECT * FROM despesas WHERE data IS NULL OR categoria IS NULL LIMIT 10;")
         dados_invalidos = cursor.fetchall()
         if dados_invalidos:
@@ -58,7 +52,6 @@ try:
         else:
             print("Nenhum dado inválido encontrado.")
 
-            # Query para as 10 operadoras com maiores despesas no último trimestre (últimos 6 meses)
             query_ultimo_trimestre = """
             SELECT operadora, SUM(valor) AS total_despesas
             FROM despesas
@@ -79,7 +72,6 @@ try:
             else:
                 print("Nenhum resultado encontrado para o último trimestre.")
 
-            # Query para as 10 operadoras com maiores despesas no último ano (últimos 2 anos)
             query_ultimo_ano = """
             SELECT operadora, SUM(valor) AS total_despesas
             FROM despesas
@@ -100,7 +92,6 @@ try:
             else:
                 print("Nenhum resultado encontrado para o último ano.")
 
-            # Verificar se há despesas com valor igual a zero ou inválido
             cursor.execute("""
             SELECT operadora, SUM(valor) AS total_despesas
             FROM despesas
